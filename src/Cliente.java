@@ -1,15 +1,19 @@
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Cliente{
-    String host = "";
+    String host = "localhost";
     int port = 0;
-
+    PrintWriter pw = null;
+    OutputStream os = null;
     Socket socket = null;
     InputStreamReader isr = null;
-    BufferedReader br = null;
+    BufferedReader bf = null;
 
     final String errorMSG = "CLIENT ERROR";
 
@@ -35,12 +39,12 @@ public class Cliente{
 
         try {
             isr = new InputStreamReader(socket.getInputStream());
-            br = new BufferedReader(isr);
+            bf = new BufferedReader(isr);
             //En caso de que sea solo una linea de mensaje
-            String ans = br.readLine();
+            String ans = bf.readLine();
             System.out.println("CLIENTE: Message received");
             //Recordar cerrar al final
-            br.close();
+            bf.close();
             isr.close();
             return ans;
         } catch (Exception e) {

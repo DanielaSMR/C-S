@@ -1,6 +1,6 @@
 public class Main {
     public static void main(String[] args) {
-        String host = "192.168.67.239";
+        String host = "localhost";
         int port = 1337;
 
         Cliente c = new Cliente(host, port);

@@ -122,6 +122,7 @@ class Server implements Runnable{
                         cerrarConexion();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        cerrarConexion();
                     }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -204,14 +205,19 @@ class Server implements Runnable{
 
     public void mostrarTickets() {
         System.out.println( "----- Lista de Tickets -----");
+        int contador = 1;
         for (Ticket ticket : tickets) {
-            System.out.println(ticket);
+            pw.write(contador + "-" + ticket.toString());
+            pw.flush();
+            contador++;
         }
         System.out.println("----------------------------");
     }
 
     private void cerrarConexion() {
         try {
+            pw.write("Adios! :)");
+            pw.flush();
             if (pw != null) pw.close();
             if (os != null) os.close();
             if (bf != null) bf.close();

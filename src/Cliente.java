@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Cliente{
     String host = "localhost";
@@ -14,6 +15,7 @@ public class Cliente{
     Socket socket = null;
     InputStreamReader isr = null;
     BufferedReader bf = null;
+    Scanner sc = new Scanner(System.in);
 
     final String errorMSG = "CLIENT ERROR";
 
@@ -32,6 +34,23 @@ public class Cliente{
         } catch (Exception e) {
             System.out.println("CLIENT: Connection rejected");
             return false;
+        }
+    }
+
+    public void interactuar(){
+        while (true) {
+            try {            
+            String ans = bf.readLine();
+            System.out.println(ans);
+
+            String userInput = sc.nextLine();
+            pw.println(userInput + "\n");
+            pw.flush();
+            System.out.println("CLIENT: Message sent");
+            } catch (Exception e) {
+                e.printStackTrace();
+                
+            }
         }
     }
 
@@ -54,10 +73,10 @@ public class Cliente{
         
     }
 
-    public boolean send(String message){
+    public boolean send(){
         try {
-            PrintWriter pw = new PrintWriter(socket.getOutputStream());
-            pw.println(message);
+            String userInput = sc.nextLine();
+            pw.println(userInput + "\n");
             pw.flush();
             System.out.println("CLIENT: Message sent");
             return true;

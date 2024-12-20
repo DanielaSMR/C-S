@@ -30,7 +30,7 @@ public class Ticket {
             color = GREEN;
             estadoS = "Solucionado";
         }
-        return "Ticket{" + color + "•" + RESET + problema + "\n Usuario: " + nombre + "\r Prioridad: " + prioridad + "\r Estado: " + color + estadoS + RESET +'}';
+        return "Ticket{" + color + "-" + RESET + problema + " Usuario: " + nombre + " Prioridad: " + prioridad + " Estado: " + color + estadoS + RESET +'}';
     }
 
     public String getNombre() {

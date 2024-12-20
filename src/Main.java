@@ -1,33 +1,14 @@
 public class Main {
     public static void main(String[] args) {
-        String host = "localhost";
-        int port = 1337;
+        int port = 12345; // Puerto que usará el servidor y el cliente
+        String host = "localhost"; // Dirección del host
 
-        Cliente c = new Cliente(host, port);
+        // Iniciar el servidor en un hilo separado
+        Server2 server = new Server2(port);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
 
-        if(!c.connect()){
-            System.out.println("ERROR: Can't connect to the server");
-            return;
-        }
-        c.send("Hola mundo");
-        String ans = c.receive();
-        System.out.println(ans);
-
-        if(!c.connect()){
-            System.out.println("ERROR: Can't connect to the server");
-            return;
-        }
-        c.send("Adios mundo");
-        ans = c.receive();
-        System.out.println(ans);
-
-        Server srv = new Server(port);
-        Thread tServer = new Thread(srv);
-        tServer.start();
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Iniciar el cliente en el hilo principal
+        new Cliente2(host, port);
     }
 }

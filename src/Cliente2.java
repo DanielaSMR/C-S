@@ -1,67 +1,89 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Cliente2 {
-    private Socket socket = null;
-    private InputStream is = null;
-    private InputStreamReader isr = null;
-    private BufferedReader bf = null;
-    private PrintWriter pw = null;
-    private OutputStream os = null;
+public class Cliente2{
+    String host = "localhost";
+    int port = 0;
+    PrintWriter pw = null;
+    OutputStream os = null;
+    Socket socket = null;
+    InputStreamReader isr = null;
+    BufferedReader bf = null;
+    Scanner sc = new Scanner(System.in);
 
-    public Cliente2(String host, int port) {
+    final String errorMSG = "CLIENT ERROR";
+
+    public Cliente2(String host,int port){
+        this.host = host;
+        this.port = port;
+    }
+
+    //Para conectar con el servidor
+    //Devuelve un boolean que nos indicara si esta conectado o no
+    public boolean connect(){
         try {
-            socket = new Socket(host, port);
-            is = socket.getInputStream();
-            isr = new InputStreamReader(is);
-            bf = new BufferedReader(isr);
-            os = socket.getOutputStream();
-            pw = new PrintWriter(os);
-
-            interactuar();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            cerrarConexion();
+            socket = new Socket(host,port);
+            System.out.println("CLIENT: Connected");
+            return true;
+        } catch (Exception e) {
+            System.out.println("CLIENT: Connection rejected");
+            return false;
         }
     }
 
-    private void interactuar() {
-        Scanner scanner = new Scanner(System.in);
-        try {
-            while (true) {
-                // Leer el mensaje del servidor
-                String serverMessage = bf.readLine();
-                System.out.println(serverMessage);
+    public void interactuar(){
+        while (true) {
+            try {            
+            String ans = bf.readLine();
+            System.out.println(ans);
 
-                // Enviar la respuesta al servidor
-                String userInput = scanner.nextLine();
-                pw.write(userInput + "\n");
-                pw.flush();
-
-                if (serverMessage.contains("Adios! :)")) {
-                    System.out.println("CLIENTE: Desconectado");
-                    break;
-                }
+            String userInput = sc.nextLine();
+            pw.println(userInput + "\n");
+            pw.flush();
+            System.out.println("CLIENT: Message sent");
+            } catch (Exception e) {
+                e.printStackTrace();
+                
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
         }
     }
 
-    private void cerrarConexion() {
+    public String receive(){
+
         try {
-            if (pw != null) pw.close();
-            if (os != null) os.close();
-            if (bf != null) bf.close();
-            if (isr != null) isr.close();
-            if (is != null) is.close();
-            if (socket != null) socket.close();
-        } catch (IOException e) {
+            isr = new InputStreamReader(socket.getInputStream());
+            bf = new BufferedReader(isr);
+            //En caso de que sea solo una linea de mensaje
+            String ans = bf.readLine();
+            System.out.println("CLIENTE: Message received");
+            //Recordar cerrar al final
+            bf.close();
+            isr.close();
+            return ans;
+        } catch (Exception e) {
             e.printStackTrace();
+            return errorMSG;
+        }
+        
+    }
+
+    public boolean send(){
+        try {
+            String userInput = sc.nextLine();
+            pw.println(userInput + "\n");
+            pw.flush();
+            System.out.println("CLIENT: Message sent");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
+

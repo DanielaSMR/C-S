@@ -1,89 +1,67 @@
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Cliente{
-    String host = "localhost";
-    int port = 0;
-    PrintWriter pw = null;
-    OutputStream os = null;
-    Socket socket = null;
-    InputStreamReader isr = null;
-    BufferedReader bf = null;
-    Scanner sc = new Scanner(System.in);
+public class Cliente {
+    private Socket socket = null;
+    private InputStream is = null;
+    private InputStreamReader isr = null;
+    private BufferedReader bf = null;
+    private PrintWriter pw = null;
+    private OutputStream os = null;
 
-    final String errorMSG = "CLIENT ERROR";
-
-    public Cliente(String host,int port){
-        this.host = host;
-        this.port = port;
-    }
-
-    //Para conectar con el servidor
-    //Devuelve un boolean que nos indicara si esta conectado o no
-    public boolean connect(){
+    public Cliente(String host, int port) {
         try {
-            socket = new Socket(host,port);
-            System.out.println("CLIENT: Connected");
-            return true;
-        } catch (Exception e) {
-            System.out.println("CLIENT: Connection rejected");
-            return false;
-        }
-    }
-
-    public void interactuar(){
-        while (true) {
-            try {            
-            String ans = bf.readLine();
-            System.out.println(ans);
-
-            String userInput = sc.nextLine();
-            pw.println(userInput + "\n");
-            pw.flush();
-            System.out.println("CLIENT: Message sent");
-            } catch (Exception e) {
-                e.printStackTrace();
-                
-            }
-        }
-    }
-
-    public String receive(){
-
-        try {
-            isr = new InputStreamReader(socket.getInputStream());
+            socket = new Socket(host, port);
+            is = socket.getInputStream();
+            isr = new InputStreamReader(is);
             bf = new BufferedReader(isr);
-            //En caso de que sea solo una linea de mensaje
-            String ans = bf.readLine();
-            System.out.println("CLIENTE: Message received");
-            //Recordar cerrar al final
-            bf.close();
-            isr.close();
-            return ans;
-        } catch (Exception e) {
+            os = socket.getOutputStream();
+            pw = new PrintWriter(os);
+
+            interactuar();
+        } catch (IOException e) {
             e.printStackTrace();
-            return errorMSG;
+        } finally {
+            cerrarConexion();
         }
-        
     }
 
-    public boolean send(){
+    private void interactuar() {
+        Scanner scanner = new Scanner(System.in);
         try {
-            String userInput = sc.nextLine();
-            pw.println(userInput + "\n");
-            pw.flush();
-            System.out.println("CLIENT: Message sent");
-            return true;
-        } catch (Exception e) {
+            while (true) {
+                // Leer el mensaje del servidor
+                String serverMessage = bf.readLine();
+                System.out.println(serverMessage);
+
+                // Enviar la respuesta al servidor
+                String userInput = scanner.nextLine();
+                pw.write(userInput + "\n");
+                pw.flush();
+
+                if (serverMessage.contains("Adios! :)")) {
+                    System.out.println("CLIENTE: Desconectado");
+                    break;
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
-            return false;
+        } finally {
+            scanner.close();
+        }
+    }
+
+    private void cerrarConexion() {
+        try {
+            if (pw != null) pw.close();
+            if (os != null) os.close();
+            if (bf != null) bf.close();
+            if (isr != null) isr.close();
+            if (is != null) is.close();
+            if (socket != null) socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
-

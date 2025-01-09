@@ -11,7 +11,7 @@ import java.util.List;
 
 public class procesoCliente {
     private int port;
-    private Server servidor = new Server(port);
+    private ServerM servidor = new ServerM(port);
     private ServerSocket server = null;
     private Socket cliente = null;
     private InputStream is = null;

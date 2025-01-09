@@ -3,10 +3,10 @@ public class Main {
         int port = 12345; 
         String host = "localhost";
 
-        Server2 server = new Server2(port);
+        Server server = new Server(port);
         Thread serverThread = new Thread(server);
         serverThread.start();
 
-        new Cliente2(host, port);
+        new Cliente(host, port);
     }
 }
